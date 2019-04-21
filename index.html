@@ -1,0 +1,80 @@
+<html>
+    <head>
+        <meta charset="utf-8"/>
+    </head>
+    <style>
+        .container {
+            display: grid;
+            grid-template-rows: repeat(16, 1fr);
+            grid-template-columns: repeat(16, 1fr);
+            width: 600px;
+            height: 600px;
+            border: 1px solid black;
+        }
+    </style>
+    <body>
+        <button>Reset</button><br><br>
+        <div class="container"></div>
+    </body>
+    <script>
+        const containerDiv = document.querySelector('.container');
+        const button = document.querySelector('button');
+
+        function changeColor(ev) {
+            if(ev.target.style.backgroundColor === '') {
+                let r = Math.floor(Math.random()*256);
+                let g = Math.floor(Math.random()*256);
+                let b = Math.floor(Math.random()*256);
+                ev.target.style.backgroundColor = `rgb(${r},${g},${b})`;
+            }
+            else {
+                let rgb = ev.target.style.backgroundColor;
+                rgb = rgb.replace(/[^\d,]/g, '').split(',');
+                let r = Math.floor(0.9 * Number(rgb[0]));
+                let g = Math.floor(0.9 * Number(rgb[1]));
+                let b = Math.floor(0.9 * Number(rgb[2]));
+                ev.target.style.backgroundColor = `rgb(${r},${g},${b})`;
+            }
+        }
+        function addChildDivNode(num) {
+            for(let i=1; i<=num; i+=1) {
+                let divNode = document.createElement('div');
+                divNode.addEventListener('mouseenter', changeColor);
+                containerDiv.append(divNode);
+            }
+        }
+        function removeChildDivNode(num) {
+            const childDivs = document.querySelectorAll('.container div');
+            for(let i=1; i<=num; i+=1) {
+                childDivs[i].remove();
+            }
+        }
+        function reset() {
+            const childDivs = document.querySelectorAll('.container div');
+            childDivs.forEach(childDiv => {
+                childDiv.style.backgroundColor = '';
+            });
+
+            const numOfSqPerSide = Number(prompt('how many squares per side to make the new grid?'));
+            if (isNaN(numOfSqPerSide) || numOfSqPerSide <= 0 || numOfSqPerSide > 100) {
+                alert('please enter a valid positive integer between 1 and 100');
+                return;
+            }
+
+            const totalSq = numOfSqPerSide * numOfSqPerSide;
+            
+            if(totalSq === childDivs.length) return;
+            containerDiv.style = `grid-template-rows: repeat(${numOfSqPerSide}, 1fr); grid-template-columns: repeat(${numOfSqPerSide}, 1fr);`;
+
+            if(totalSq > childDivs.length) {
+                addChildDivNode(totalSq - childDivs.length);
+            }
+            else {
+                removeChildDivNode(childDivs.length - totalSq);
+            }
+        }
+
+        button.addEventListener('click', reset);
+        addChildDivNode(16 * 16);
+    </script>
+</html>
